@@ -1,0 +1,34 @@
+{% extends "core/base.html" %}
+
+{% block title %}Owner Dashboard | TableTap{% endblock %}
+
+{% block content %}
+<main class="bg-gray-100 min-h-screen py-12 px-6">
+  <h2 class="text-5xl font-bold mb-12 text-center">
+    Welcome, <span class="text-blue-600">{{ owner_name }}</span>
+    {% if restaurant_name %} from <span class="text-blue-600">{{ restaurant_name }}</span>{% endif %}
+  </h2>
+
+  <div class="flex justify-center">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
+      <!-- Menu -->
+      <a href="{% url 'menu' %}" class="bg-white rounded-2xl shadow p-6 w-full max-w-xs h-52 hover:bg-gray-50 transition text-center flex flex-col justify-center">
+        <h3 class="text-xl font-semibold mb-2">Menu</h3>
+        <p>Manage your digital menu and categories.</p>
+      </a>
+
+      <!-- QR Codes -->
+      <a href="{% url 'qr_generator' %}" class="bg-white rounded-2xl shadow p-6 w-full max-w-xs h-52 hover:bg-gray-50 transition text-center flex flex-col justify-center">
+        <h3 class="text-xl font-semibold mb-2">Table QR Codes</h3>
+        <p>View QR codes for each restaurant table.</p>
+      </a>
+
+      <!-- Orders -->
+      <a href="{% url 'owner_orders' %}" class="bg-white rounded-2xl shadow p-6 w-full max-w-xs h-52 hover:bg-gray-50 transition text-center flex flex-col justify-center">
+        <h3 class="text-xl font-semibold mb-2">Orders</h3>
+        <p>Track and manage current customer orders.</p>
+      </a>
+    </div>
+  </div>
+</main>
+{% endblock %}

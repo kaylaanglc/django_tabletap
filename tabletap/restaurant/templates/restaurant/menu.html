@@ -1,0 +1,117 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Menu Management | TableTap{% endblock %}
+
+{% block content %}
+<!-- Back Button -->
+<div class="mb-4">
+  <a href="{% url 'dashboard' %}" class="inline-block text-blue-600 hover:underline text-sm">
+    ← Back to Dashboard
+  </a>
+</div>
+
+<!-- Main Content -->
+<main class="flex-1 px-4 py-12 bg-gray-100 min-h-screen">
+
+  <!-- Page Title & Add Item Button -->
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+    <h2 class="text-2xl font-bold">Menu</h2>
+    <a href="{% url 'add_item' %}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 whitespace-nowrap">
+      + Add Menu Item
+    </a>
+  </div>
+  
+<div class="flex flex-col md:flex-row gap-6">
+  <!-- Sidebar -->
+  <aside class="w-full md:w-1/4 bg-white rounded shadow p-4">
+    <!-- Add Category Form -->
+    <form method="post" class="flex mb-4" action="{% url 'menu' %}">
+      {% csrf_token %}
+      {{ form.name }}
+      <button type="submit" class="bg-blue-600 text-white px-4 rounded-r-md hover:bg-blue-700">Add</button>
+    </form>
+
+    <!-- Category List -->
+    <ul class="space-y-2 font-medium">
+      <li>
+        <a href="{% url 'menu' %}?category=all"
+           class="block py-1 px-2 text-black rounded hover:bg-blue-100 {% if not selected_category %}bg-blue-100{% endif %}">
+          All
+        </a>
+      </li>
+      {% for category in categories %}
+        <li class="py-1 px-2 rounded hover:bg-blue-100 {% if selected_category == category.id %}bg-blue-100{% endif %}">
+          <div class="flex justify-between items-center">
+            <!-- Link to filter by category -->
+            <a href="{% url 'menu' %}?category={{ category.id }}" class="flex-1 text-black" id="category-name-{{ category.id }}">{{ category.name }}</a>
+
+            <!-- Edit Form (Hidden by Default) -->
+            <form id="edit-form-{{ category.id }}" method="post" action="{% url 'edit_category' category.id %}"
+                  class="hidden flex items-center gap-2 w-full">
+              {% csrf_token %}
+              <input type="text" name="name" value="{{ category.name }}"
+                     class="px-2 py-1 text-sm border rounded w-full" required>
+              <button type="submit" class="text-blue-600 hover:underline">Save</button>
+            </form>
+
+            <!-- Edit/Delete Actions -->
+            <div class="space-x-2 text-sm" id="actions-{{ category.id }}">
+              <button type="button" onclick="toggleEditForm('{{ category.id }}')" class="text-blue-600 hover:underline">Edit</button>
+              <form method="post" action="{% url 'delete_category' category.id %}" class="inline">
+                {% csrf_token %}
+                <button type="submit" class="text-red-600 hover:underline">Delete</button>
+              </form>
+            </div>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  </aside>
+
+  <!-- Menu Item Section -->
+  <section class="w-full bg-white rounded shadow p-6 space-y-6">
+    {% for category in categories %}
+      {% if not selected_category or selected_category == category.id %}
+        <div>
+          <h3 class="text-xl font-semibold mb-4">{{ category.name }}</h3>
+          <ul class="space-y-3">
+            {% for item in items %}
+              {% if item.category == category %}
+                <li class="flex flex-col sm:flex-row justify-between sm:items-center border p-3 rounded">
+                  <div>
+                    <p class="font-medium">{{ item.name }}</p>
+                    <p class="text-sm text-gray-500">${{ item.price }}</p>
+                  </div>
+                  <div class="flex gap-4 text-sm mt-2 sm:mt-0">
+                    <a href="{% url 'edit_item' item.id %}" class="text-blue-600 hover:underline">Edit</a>
+                    <form method="post" action="{% url 'delete_item' item.id %}" class="inline">
+                      {% csrf_token %}
+                      <button type="submit" class="text-red-600 hover:underline">Delete</button>
+                    </form>
+                  </div>
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </section>
+</div>
+
+<!-- JS to toggle edit mode -->
+<script>
+  function toggleEditForm(categoryId) {
+    const nameLink = document.getElementById(`category-name-${categoryId}`);
+    const form = document.getElementById(`edit-form-${categoryId}`);
+    const actions = document.getElementById(`actions-${categoryId}`);
+
+    if (form && nameLink && actions) {
+      nameLink.classList.add('hidden');
+      form.classList.remove('hidden');
+      actions.classList.add('hidden');
+    }
+  }
+</script>
+{% endblock %}

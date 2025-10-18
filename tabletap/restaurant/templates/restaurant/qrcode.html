@@ -1,0 +1,28 @@
+{% extends "core/base.html" %}
+{% block title %}Table QR Codes | TableTap{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+  <a href="{% url 'dashboard' %}" class="inline-block text-blue-600 hover:underline text-sm">
+    ← Back to Dashboard
+  </a>
+</div>
+
+<main class="p-6 bg-gray-100 min-h-screen">
+  <div class="mb-8">
+    <h2 class="text-3xl font-bold text-center">
+      QR Codes for <span class="text-blue-600">{{ restaurant_name }}</span>
+    </h2>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-6">
+    {% for table in qr_codes %}
+    <div class="bg-white p-4 rounded shadow text-center">
+      <h3 class="text-lg font-semibold mb-2">Table {{ table.table_number }}</h3>
+      <img src="{{ table.qr_code }}" alt="QR Code for Table {{ table.table_number }}" class="mx-auto mb-2 w-32 h-32 object-contain" />
+      <p class="text-sm text-gray-600">Scan to order at Table {{ table.table_number }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</main>
+{% endblock %}
